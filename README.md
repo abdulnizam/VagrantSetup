@@ -17,6 +17,10 @@ Nginx, PHP
 
 	script_file: nginx/scripts.sh
 
+	To activate ssl import and activate the certificate on your system
+
+	/vagrant/keys > domain certificate
+
 
 To run the vagrant:
 

@@ -6,6 +6,8 @@ echo "Installing Nginx"
 sudo apt-get install Nginx -y
 
 sudo cp /vagrant/nginx/new-server.local /etc/nginx/sites-available/
+sudo mkdir -p /var/www/keys
+sudo cp /vagrant/keys/* /var/www/keys/
 
 sudo su -c "ln -s /etc/nginx/sites-available/new-server.local /etc/nginx/sites-enabled/new-server.local"
 sudo cp /vagrant/nginx/new-server.local /etc/nginx/conf.d/

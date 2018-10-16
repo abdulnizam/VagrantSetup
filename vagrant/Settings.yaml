@@ -10,11 +10,17 @@ cpus: 1
 script_file: nginx/scripts.sh
 ssh_username: vagrant
 ssh_password: vagrant
+default_ports: true
 
 folders:
     - map: ../
       to: /var/www
       other: true
+
+sites:
+    - map: new-server.local
+      to: /var/www/
+
 
 # ports:
 #     - send: 50000
