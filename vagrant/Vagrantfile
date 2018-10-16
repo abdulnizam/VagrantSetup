@@ -1,60 +1,119 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
+require 'yaml'
 
-Vagrant.configure(2) do |config|
-  config.vm.box = "ubuntu/trusty64"
-  config.ssh.username = "vagrant"
-  config.ssh.password = "vagrant"
+VAGRANTFILE_API_VERSION ||= "2"
+
+confDir = $confDir ||= File.expand_path(File.dirname(__FILE__))
+settingsPathYaml = confDir + "/Settings.yaml"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  if File.exist? settingsPathYaml then
+      settings = YAML::load(File.read(settingsPathYaml))
+  else
+      abort "Settings file not found in #{confDir}"
+  end
+
+  ENV['VAGRANT_DEFAULT_PROVIDER'] = settings["provider"] ||= "virtualbox"
+
+  config.vm.define settings["name"] ||= "devbox"
+  config.vm.box = settings["box"] ||= "ubuntu/trusty64"
+  config.vm.box_version = settings["version"] ||= ">= 4.0.0"
+  config.vm.hostname = settings["hostname"] ||= "devbox"
+
+  config.ssh.username = settings["ssh_username"] ||= "vagrant"
+  config.ssh.password = settings["ssh_password"] ||= "vagrant"
+
+  if settings["ip"] != "autonetwork"
+      config.vm.network :private_network, ip: settings["ip"] ||= "192.168.20.20"
+  else
+      config.vm.network :private_network, :ip => "0.0.0.0", :auto_network => true
+  end
 
   config.vm.provider "parallels" do |v, override|
+    v.name = settings["name"] ||= "devbox"
+    v.cpus = settings["cpus"] ||= 1
     override.vm.box = "parallels/ubuntu-14.04"
   end
 
-  # Disable automatic box update checking. If you disable this, then
-  # boxes will only be checked for updates when the user runs
-  # `vagrant box outdated`. This is not recommended.
-  # config.vm.box_check_update = false
+  # Default Port Forwarding
+  # default_ports = {
+  #     80 => 8000,
+  #     443 => 44300,
+  #     3306 => 33060,
+  #     4040 => 4040,
+  #     5432 => 54320,
+  #     8025 => 8025,
+  #     27017 => 27017
+  # }
 
-  # Create a forwarded port mapping which allows access to a specific port
-  # within the machine from a port on the host machine. In the example below,
-  # accessing "localhost:8080" will access port 80 on the guest machine.
-  # config.vm.network "forwarded_port", guest: 80, host: 8080
+  # Use Default Port Forwarding Unless Overridden
+  # unless settings.has_key?("default_ports") && settings["default_ports"] == false
+  #     default_ports.each do |guest, host|
+  #         unless settings["ports"].any? { |mapping| mapping["guest"] == guest }
+  #             config.vm.network "forwarded_port", guest: guest, host: host, auto_correct: true
+  #         end
+  #     end
+  # end
 
-  # Create a private network, which allows host-only access to the machine
-  # using a specific IP.
-  config.vm.hostname = "devbox"
-  config.vm.network "private_network", ip: "192.168.69.100"
+  if settings.has_key?("ports")
+      settings["ports"].each do |port|
+          config.vm.network "forwarded_port", guest: port["guest"], host: port["host"], protocol: port["protocol"], auto_correct: true
+      end
+  end
 
-  # Create a public network, which generally matched to bridged network.
-  # Bridged networks make the machine appear as another physical device on
-  # your network.
-  # config.vm.network = "public_network"
+  # Register All Of The Configured Shared Folders
+  if settings.include? 'folders'
+      settings["folders"].each do |folder|
+          if File.exists? File.expand_path(folder["map"])
+              mount_opts = []
 
-  # sync folder test. Depending on config this would be for git on Mac and clone on
-  #vm
-  config.vm.synced_folder "../", "/var/www",
-    owner: "vagrant",
-    group: "www-data",
-    mount_options: ["dmode=775,fmode=664"]
+              if (folder["type"] == "nfs")
+                  mount_opts = folder["mount_options"] ? folder["mount_options"] : ['actimeo=1', 'nolock']
+              elsif (folder["type"] == "smb")
+                  mount_opts = folder["mount_options"] ? folder["mount_options"] : ['vers=3.02', 'mfsymlinks']
+              end
+
+              owner = settings["owner"] ||= "vagrant"
+              group = settings["group"] ||= "www-data"
+
+              # For b/w compatibility keep separate 'mount_opts', but merge with options
+
+              if (folder["other"] == true)
+                  mount_opts = folder["mount_options"] ? folder["mount_options"] : ["dmode=775,fmode=664"]
+                  options = (folder["options"] || {}).merge({ mount_options: mount_opts, owner: owner, group: group })
+              else
+                  options = (folder["options"] || {}).merge({ mount_options: mount_opts })
+              end
+
+              # Double-splat (**) operator only works with symbol keys, so convert
+              options.keys.each{|k| options[k.to_sym] = options.delete(k) }
+
+              config.vm.synced_folder folder["map"], folder["to"], type: folder["type"] ||= nil, **options
+
+              # Bindfs support to fix shared folder (NFS) permission issue on Mac
+              if (folder["type"] == "nfs")
+                  if Vagrant.has_plugin?("vagrant-bindfs")
+                      config.bindfs.bind_folder folder["to"], folder["to"]
+                  end
+              end
+          else
+              config.vm.provision "shell" do |s|
+                  s.inline = ">&2 echo \"Unable to mount one of your folders. Please check your folders in Homestead.yaml\""
+              end
+          end
+      end
+  end
 
   # up vbox ram to 2gb
   #
    config.vm.provider "virtualbox" do |vb|
+     vb.name = settings["name"] ||= "devbox"
      # Customize the amount of memory on the VM:
-     vb.memory = "2000"
+     vb.memory = settings["memory"] ||= "2000"
      vb.customize ["setextradata", :id, "VBoxInternal2/SharedFoldersEnableSymlinksCreate/v-root", "1"]
    end
-  #
-  # View the documentation for the provider you are using for more
-  # information on available options.
-
-  # Define a Vagrant Push strategy for pushing to Atlas. Other push strategies
-  # such as FTP and Heroku are also available. See the documentation at
-  # https://docs.vagrantup.com/v2/push/atlas.html for more information.
-  # config.push.define "atlas" do |push|
-  #   push.app = "YOUR_ATLAS_USERNAME/YOUR_APPLICATION_NAME"
-  # end
-
-  # Moving all VM specific configs to an external script file
-   config.vm.provision :shell,privileged: false, path: "scripts.sh"
+  
+   config.vm.provision :shell,privileged: false, path: settings["script_file"] ||= "scripts.sh"
 end

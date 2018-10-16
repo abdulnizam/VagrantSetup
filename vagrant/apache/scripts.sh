@@ -37,6 +37,6 @@ cd mod_myvhost-0.21
 sudo make
 sudo make install
 
-sudo cp /vagrant/myvhost.load /etc/apache2/mods-available/
-sudo su -c "cat /vagrant/hosts >> /etc/hosts"
+sudo cp /vagrant/apache/myvhost.load /etc/apache2/mods-available/
+sudo su -c "cat /vagrant/apache/hosts >> /etc/hosts"
 sudo service apache2 restart

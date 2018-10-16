@@ -1,0 +1,23 @@
+---
+
+ip: "192.168.99.99"
+provider: virtualbox
+name: devbox
+box: ubuntu/trusty64
+memory: 2096
+cpus: 1
+script_file: apache/scripts.sh
+ssh_username: vagrant
+ssh_password: vagrant
+
+folders:
+    - map: ~/Sites
+      to: /var/www
+      other: true
+
+# ports:
+#     - send: 50000
+#       to: 5000
+#     - send: 7777
+#       to: 777
+#       protocol: udp
