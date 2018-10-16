@@ -121,4 +121,13 @@ then
         -out "$PATH_CRT" 2>/dev/null
 fi
 
+# copy all certificate to accessable in the system so that we can activate locally 
+sudo cp /etc/nginx/ssl/* /vagrant/keys/
+# restart nginx
+sudo service nginx restart
+# remove existing hosts
+
+sudo rm -f /etc/nginx/sites-enabled/*
+sudo rm -f /etc/nginx/sites-available/*
+
 
