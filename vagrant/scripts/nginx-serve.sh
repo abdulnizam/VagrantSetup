@@ -20,9 +20,10 @@ else configureZray=""
 fi
 
 block="server {
-    listen ${3:-80};
-    listen ${4:-443} ssl http2;
+    listen ${3:-80} default_server;
+    listen ${4:-443} default_server ssl;
     server_name .$1;
+    ssl on;
     root \"$2\";
 
     index index.html index.htm index.php;

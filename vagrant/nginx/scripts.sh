@@ -3,12 +3,12 @@ sudo apt-get -y update
 sudo apt-get -y upgrade
 
 echo "Installing Nginx"
-sudo apt-get install Nginx -y
+sudo apt-get install nginx -y
 
-sudo cp /vagrant/nginx/new-server.local /etc/nginx/sites-available/
+# sudo cp /vagrant/nginx/new-server.local /etc/nginx/sites-available/
 
-sudo su -c "ln -s /etc/nginx/sites-available/new-server.local /etc/nginx/sites-enabled/new-server.local"
-sudo cp /vagrant/nginx/new-server.local /etc/nginx/conf.d/
+# sudo su -c "ln -s /etc/nginx/sites-available/new-server.local /etc/nginx/sites-enabled/new-server.local"
+# sudo cp /vagrant/nginx/new-server.local /etc/nginx/conf.d/
 
 # sudo mkdir /var/www/new-server.cd local/logs/
 sudo nginx -s reload

@@ -7,6 +7,7 @@ server {
         index  index.php index.html index.htm;
 
         server_name new-server.local;
+        ssl on;
 
         ssl_certificate     /etc/nginx/ssl/new-server.local.crt;
 	ssl_certificate_key /etc/nginx/ssl/new-server.local.key;
