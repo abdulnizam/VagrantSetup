@@ -2,7 +2,8 @@
 
 ip: "192.168.99.99"
 provider: virtualbox
-name: devbox
+name: devboxes
+hostname: localhost
 box: ubuntu/trusty64
 memory: 2096
 cpus: 1
@@ -11,7 +12,7 @@ ssh_username: vagrant
 ssh_password: vagrant
 
 folders:
-    - map: ~/Sites
+    - map: ../
       to: /var/www
       other: true
 

@@ -20,7 +20,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define settings["name"] ||= "devbox"
   config.vm.box = settings["box"] ||= "ubuntu/trusty64"
   config.vm.box_version = settings["version"] ||= ">= 4.0.0"
-  config.vm.hostname = settings["hostname"] ||= "devbox"
+  config.vm.hostname = settings["hostname"] ||= "localhost"
 
   config.ssh.username = settings["ssh_username"] ||= "vagrant"
   config.ssh.password = settings["ssh_password"] ||= "vagrant"

@@ -25,6 +25,8 @@ sudo a2enmod rewrite
 sudo a2enmod authz_groupfile
 sudo a2enmod proxy_http
 sudo rm -f /etc/apache2/sites-enabled/000-default.conf
+sudo su -c "echo 'ServerName localhost' | sudo tee /etc/apache2/conf-available/fqdn.conf"
+sudo a2enconf fqdn
 sudo service apache2 restart
 
 echo "enable php modules"
@@ -40,3 +42,7 @@ sudo make install
 sudo cp /vagrant/apache/myvhost.load /etc/apache2/mods-available/
 sudo su -c "cat /vagrant/apache/hosts >> /etc/hosts"
 sudo service apache2 restart
+
+
+
+
