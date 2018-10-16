@@ -13,6 +13,8 @@ class Settings
                     s.args = [site["map"]]
                 end
 
+                type = site["type"] ||= "apache"
+
                 config.vm.provision "shell" do |s|
                     s.name = "Creating Site: " + site["map"]
                     if site.include? 'params'
@@ -22,8 +24,8 @@ class Settings
                         end
                         params += " )"
                     end
-                    s.path = scriptDir + "/nginx-serve.sh"
-                    s.args = [site["map"], site["to"], site["port"] ||= "80", site["ssl"] ||= "443", site["php"] ||= "7.2", params ||= "", site["zray"] ||= "false"]
+                    s.path = scriptDir + "/#{type}-serve.sh"
+                    s.args = [site["map"], site["to"], site["port"] ||= "80", site["ssl"] ||= "443", site["php"] ||= "5", params ||= "", site["zray"] ||= "false"]
 
                     if site["zray"] == 'true'
                         config.vm.provision "shell" do |s|
@@ -39,6 +41,12 @@ class Settings
                         config.vm.provision "shell" do |s|
                             s.inline = "rm -rf " + site["to"] + "/ZendServer"
                         end
+                    end
+                end
+
+                config.vm.provision "shell" do |s|
+                    if type == "nginx"
+                        s.inline = "sudo service nginx restart"
                     end
                 end
 

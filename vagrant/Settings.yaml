@@ -20,6 +20,8 @@ folders:
 sites:
     - map: new-server.local
       to: /var/www/
+      type: nginx
+      php: 5
 
 
 # ports:

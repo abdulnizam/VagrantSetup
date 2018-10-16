@@ -10,7 +10,7 @@ if [ -n "$6" ]; then
    done
 fi
 
-if [ "$7" = "true" ] && [ "$5" = "7.2" ]
+if [ "$7" = "true" ] && [ "$5" = "5" ]
 then configureZray="
 location /ZendServer {
         try_files \$uri \$uri/ /ZendServer/index.php?\$args;
@@ -48,7 +48,7 @@ block="server {
 
     location ~ \.php$ {
         fastcgi_split_path_info ^(.+\.php)(/.+)$;
-        fastcgi_pass unix:/var/run/php/php$5-fpm.sock;
+        fastcgi_pass unix:/var/run/php$5-fpm.sock;
         fastcgi_index index.php;
         include fastcgi_params;
         fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;

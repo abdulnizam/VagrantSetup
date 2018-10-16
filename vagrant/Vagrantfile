@@ -126,4 +126,5 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
    config.vm.provision :shell,privileged: false, path: settings["script_file"] ||= "scripts.sh"
 
    Settings.configure(config, settings)
+
 end

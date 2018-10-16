@@ -2,3 +2,5 @@
 vagrant/.vagrant/*
 new-server.local/*
 html/*
+
+vagrant/keys/*
