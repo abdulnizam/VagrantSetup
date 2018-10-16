@@ -1,2 +1,4 @@
 
 vagrant/.vagrant/*
+new-server.local/*
+html/*

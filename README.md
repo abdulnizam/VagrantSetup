@@ -5,6 +5,18 @@ All folder will be here cd /VagrantSetup -> mkdir projectFolder
 All steps should defind in scripts.sh
 
 Apache, PHP, Mysql
+	
+	change in Settings.yaml
+
+	script_file: apache/scripts.sh
+
+
+Nginx, PHP
+	
+	change in Settings.yaml
+
+	script_file: nginx/scripts.sh
+
 
 To run the vagrant:
 

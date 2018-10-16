@@ -7,7 +7,7 @@ hostname: localhost
 box: ubuntu/trusty64
 memory: 2096
 cpus: 1
-script_file: apache/scripts.sh
+script_file: nginx/scripts.sh
 ssh_username: vagrant
 ssh_password: vagrant
 
