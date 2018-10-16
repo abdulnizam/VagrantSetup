@@ -73,3 +73,12 @@ block="server {
 
 echo "$block" > "/etc/nginx/sites-available/$1"
 ln -fs "/etc/nginx/sites-available/$1" "/etc/nginx/sites-enabled/$1"
+
+# copy all certificate to accessable in the system so that we can activate locally 
+sudo cp /etc/nginx/ssl/* /vagrant/keys/
+# remove existing hosts
+sudo rm -f /etc/nginx/sites-enabled/*
+sudo rm -f /etc/nginx/sites-available/*
+# restart nginx
+sudo service nginx restart
+
