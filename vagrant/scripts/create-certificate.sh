@@ -122,7 +122,7 @@ then
 fi
 
 # copy all certificate to accessable in the system so that we can activate locally 
-sudo cp /etc/nginx/ssl/* /vagrant/key/
+sudo cp /etc/nginx/ssl/* /vagrant/keys/
 # restart nginx
 sudo service nginx restart
 
